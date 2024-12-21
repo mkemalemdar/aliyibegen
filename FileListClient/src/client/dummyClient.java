@@ -24,8 +24,6 @@ public class dummyClient {
     static long totalDownloadedBytes = 0;
     static int totalPartRequests = 0;
     static String outputPath;
-    volatile static boolean thread1Completed = false;
-    volatile static boolean thread2Completed = false;
 
     private static String calculateFileMD5(String filePath) throws IOException {
         try {
@@ -172,11 +170,12 @@ public class dummyClient {
             long fileSize = inst.getFileSize(ip1, port1, fileId);
             System.out.println("Size of file " + fileId + " is: " + fileSize);
 
+            //dağılım için network logic eklenecek
+
             Thread thread1 = new Thread(() -> {
                 try {
                     dummyClient inst1 = new dummyClient();
                     inst1.getFileData(ip1, port1, fileId, 1, fileSize / 2);
-                    thread1Completed = true;
                 } catch (IOException e) {
                     System.err.println("Error in thread 1: " + e.getMessage());
                 }
@@ -186,7 +185,6 @@ public class dummyClient {
                 try {
                     dummyClient inst2 = new dummyClient();
                     inst2.getFileData(ip2, port2, fileId, fileSize / 2 + 1, fileSize);
-                    thread2Completed = true;
                 } catch (IOException e) {
                     System.err.println("Error in thread 2: " + e.getMessage());
                 }
